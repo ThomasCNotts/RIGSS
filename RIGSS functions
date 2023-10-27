@@ -6,10 +6,12 @@ vars <- c("A", "B", "C", "D", "E", "F", "G") #These are the variables from the a
 operators <- c("+", "-" , "/", "*","|", "&")
 equals <- c("==", ">", "<", "!=", "<=", ">=")
 
+
 # Define a basic structure for a binary tree node
 node <- function(value, left = NULL, right = NULL) {
   return(list(value = value, left = left, right = right))
 }
+
 
 # Function to create a random binary tree with the specified depth
 create_random_binary_tree <- function(max_depth) {
@@ -22,19 +24,24 @@ create_random_binary_tree <- function(max_depth) {
   return(node(value, left_subtree, right_subtree))
 }
 
+
 # Function to perform an inorder traversal and print the tree with brackets around pairs of leaf nodes and their parent
-inorder_traversal <- function(root) {
+#root is rule[[i]]
+ruleToText <- function(root) {
   if (!is.null(root)) {
     if (!is.null(root$left) && is.null(root$left$left) && is.null(root$left$right) &&
         !is.null(root$right) && is.null(root$right$left) && is.null(root$right$right)) {
       cat("(", root$left$value, " ", root$value, " ", root$right$value, ") ")
     } else {
-      inorder_traversal(root$left)
+      ruleToText(root$left)
       cat(root$value, " ")
-      inorder_traversal(root$right)
+      ruleToText(root$right)
     }
   }
 }
+#To use:
+#ruleToText(x[[1]])
+
 
 #function to create the initial population of rules
 createRules <- function(n){
@@ -46,37 +53,9 @@ rules[[i]] <- random_tree
 }
 return(rules)
 }
+#To run a rule use:
+#eval(parse(text = population[1]))
 
-#mutation function
-change_node_value_conditional <- function(tree) {
-  stack <- list(tree)
-  
-  while (length(stack) > 0) {
-    current_node <- stack[[length(stack)]]
-    stack <- stack[-length(stack)]
-    
-    if (is.leaf(current_node)) {
-      # Perform the operation for leaf nodes here
-    # If it's a leaf node, apply the condition and set the new value
-    if (any(vars == tree$value)){
-      tree$value <- sample(vars,1)
-    } else if (any(operators == tree$value)) {
-      tree$value <- sample(operators,1)
-    } else if (any(equals == tree$value)) {
-      tree$value <- sample(equals,1)
-    }
-    } else {
-      # Randomly select whether to go left or right
-      go_left <- sample(c(TRUE, FALSE), 1)
-      
-      if (go_left) {
-        stack <- c(stack, current_node$left)
-      } else {
-        stack <- c(stack, current_node$right)
-      }
-    }
-  }
-}
 
 # Function to print a binary tree visually, each node printed only once
 print_binary_tree <- function(node, level = 0, visited_nodes = c()) {
@@ -88,3 +67,33 @@ print_binary_tree <- function(node, level = 0, visited_nodes = c()) {
   }
   return(visited_nodes)
 }
+
+# Function to replace "A" with "B" in a binary tree
+#This is point mutation
+mutate <- function(root, toReplace, replaceValue) {
+  if (is.null(root)) {
+    return(NULL)
+  }
+  
+  # Check if the current node's value is "A"
+  if (root$value == toReplace) {
+    root$value <- replaceValue  # Replace "A" with "B"
+  }
+  
+  # Recursively process the left and right subtrees
+  root$left <- mutate(root$left)
+  root$right <- mutate(root$right)
+  
+  return(root)
+}
+
+#to use:
+#unlist rule
+#y <- unlist(x[[1]])
+#r <- sample(y,1)[[1]]
+
+#figure out type
+#rv <- choose what to replace it with
+
+#m <- list()
+#m[[1] <- mutate(x[[1]], r, rv)
