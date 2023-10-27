@@ -1,0 +1,115 @@
+####Hawk Dove ABM for IGSS
+
+#function to search for agents that meet a certain condition
+locFun <- function(obj, location) {
+  return(obj@location == location)
+}
+
+#function to work out how much gold has been taken by all agents on a patch (bit useless)
+goldFun <- function(obs){
+totalGoldTaken <- 0
+for (i in obs){
+totalGoldTaken <- totalGoldTaken + agents[[i]]@take}
+return(totalGoldTaken)
+}
+
+#SETUP
+#size of land in metres
+m <- 10
+land <- matrix(0, ncol=m, nrow=m)
+
+for (i in 1:10){
+x <- sample(1:m,1)
+y <- sample(1:m,1)
+gold <- sample(1:3,1)
+land[y,x] <- land[y,x] + gold
+}
+
+setClass("agent",
+representation(
+  goldTookLast = "numeric", #C
+  goldLandLast = "numeric", #D
+  agentsLast = "numeric", #E
+  lastLocation = "numeric",
+  gold = "numeric", #G
+  location = "numeric", #each patch in the land has a unique number, we're using that instead of x,y coords
+  take = "numeric" #the amount of gold the agent is trying to take
+)
+)
+
+#setup agents
+numAgents <- 100
+agents <- c()
+for (i in 1: numAgents){
+agents[[i]] <- new("agent", 
+  goldTookLast = 0,
+  goldLandLast = 0,
+  agentsLast = 0,
+  lastLocation = 0,
+  gold = 0,
+  location = 0,
+  take = 0)
+}
+
+#GO
+#agents choose a spot and move there
+
+for (ticks in 1:100){
+
+for (i in sample(1:length(agents))){
+#go to same place as last time unless you didn't get any gold
+#otherwise go somewhere random
+if (agents[[i]]@goldTookLast > 0) {agents[[i]]@location = agents[[i]]@lastLocation
+} else {
+agents[[i]]@location = sample(1:length(land),1)
+}
+}
+
+for (i in sample(1:length(agents))){
+#they see who else is there...
+#make explicit A to G attributes
+A <- land[agents[[i]]@location]
+B <- length(which(unlist(lapply(agents, function(obj) obj@location))==agents[[i]]@location))
+C <- agents[[i]]@goldTookLast
+D <- agents[[i]]@goldLandLast
+E <- agents[[i]]@agentsLast
+G <- agents[[i]]@gold
+
+#...and decide how much gold to take
+#Evolved rule here
+#take <- ...
+#To Test Use
+agents[[i]]@take <- 2
+}
+
+#they fight it out and see how much everyone gets
+#if there is enough gold then everyone gets what they want
+#if not, everyone gets zero
+for (i in 1:length(land)){
+agentsHere <- which(sapply(agents, locFun, location = i))
+if (length(agentsHere) > 0){
+goldAvailable <- land[i]
+goldTaken <- goldFun(agentsHere)
+
+# ask agents to increase their 
+# goldTookLast = 0,
+# goldLandLast = 0,
+# agentsLast = 0,
+# lastLocation = 0,
+# gold = 0,
+for (j in agentsHere){
+agents[[j]]@goldLandLast <- land[i]
+agents[[j]]@agentsLast <- length(agentsHere)
+agents[[j]]@lastLocation <- i
+if (goldAvailable >= goldTaken){
+agents[[j]]@goldTookLast <- agents[[j]]@take
+agents[[j]]@gold <- agents[[j]]@gold + agents[[j]]@take
+}else{
+agents[[j]]@goldTookLast <- 0
+}}}}
+}#end of ticks
+
+#to return gold distribution we'll need:
+for (i in 1:numAgents){
+print(agents[[i]]@gold)
+}
