@@ -1,0 +1,78 @@
+#################################################
+#EVOLVE RULES
+
+#create first population of rules
+pop <- 10
+
+rules <- createRules(pop)
+
+thenTake <- c()
+for (i in 1:pop){
+thenTake[i] <- sample(0:10,1) #the value after then for each rule
+}
+
+#start generation loop to create each population generation - what is the stopping condition?
+
+#start rules loop to test each rule
+
+for (i in 1:length(rules)){
+
+#agentCommand <- getStringRule(rules[[i]])
+#agentCommand <- cat("if (", agentCommand, ") {", thenTake[i], "}")
+
+#eval(parse(text = rule))
+
+#run ABM here for one rule here
+
+#test for fitness
+
+#end us with a vector of fitnesses called fitness
+#use dist()
+
+}
+
+#################################################
+
+#genetic operations here to build up a new population
+
+tempRules <- list() #this will hold the new generation of rules
+
+for (i in 1:length(rules)){ #this is to create the next generation of pop size rules - it will end up bigger as crossover creates two rules
+
+#choose an operation - reproduction, mutation, crossover
+choice <- sample(c("reproduction", "mutation"), 1)
+
+if (choice == "reproduction"){
+tempRules[[i]] <- sample(rules[[1]], 1)   #      , prob=fitness) #choose a rule with probabilty proportional to fitness
+} else if (choice == "mutation"){
+chosenRule <- rules[[sample(1:length(rules),1)]]     #    , prob=fitness)
+#this is point mutation but many others exist
+#to use:
+#unlist rule
+y <- unlist(chosenRule[[1]])
+#choose something to mutate, r for replace (rv is replacement value)
+r <- sample(y,1)[[1]]
+
+#figure out type of r
+if (any(vars == r)) {rv <- sample(vars,1)
+} else if (any(operators == r)) {rv <- sample(operators,1)
+} else {
+rv <- sample(equals,1)
+}
+
+m <- list()
+tempRules[[i]] <- mutate(root = chosenRule, toReplace = r, replaceValue = rv)
+
+}
+}
+
+rules <- tempRules
+
+
+
+
+
+
+
+
+

@@ -15,10 +15,10 @@ node <- function(value, left = NULL, right = NULL) {
 
 # Function to create a random binary tree with the specified depth
 create_random_binary_tree <- function(max_depth) {
-  if (max_depth == 0 || runif(1) < 0.2) {
-    return(node(sample(vars, 1)))  # Return a leaf node (value less than 10)
+  if (max_depth == 0) { #|| runif(1) < 0.2) { ##if included this will sometimes make trees with just one node
+    return(node(sample(vars, 1)))  # Return a leaf node
   }
-  value <- sample(operators, 1)  # Generate a value >= 10
+  value <- sample(operators, 1)  
   left_subtree <- create_random_binary_tree(max_depth - 1)
   right_subtree <- create_random_binary_tree(max_depth - 1)
   return(node(value, left_subtree, right_subtree))
@@ -47,7 +47,7 @@ ruleToText <- function(root) {
 createRules <- function(n){
 rules <- list()
 for (i in 1:n){
-random_tree <- create_random_binary_tree(sample(2:4,1))
+random_tree <- create_random_binary_tree(sample(1:4,1))
 random_tree[1] <- sample(equals, 1)
 rules[[i]] <- random_tree
 }
@@ -82,8 +82,8 @@ mutate <- function(root, toReplace, replaceValue) {
   }
   
   # Recursively process the left and right subtrees
-  root$left <- mutate(root$left)
-  root$right <- mutate(root$right)
+  root$left <- mutate(root$left, toReplace, replaceValue)
+  root$right <- mutate(root$right, toReplace, replaceValue)
   
   return(root)
 }
@@ -103,23 +103,16 @@ mutate <- function(root, toReplace, replaceValue) {
 #To prepare the rule for running:
 getStringRule <- function(root) {
   if (is.null(root)) {
-    return("")  # Return an empty string for an empty tree
-  }
-  
-  if (!is.null(root$left) && is.null(root$left$left) && is.null(root$left$right) &&
-      !is.null(root$right) && is.null(root$right$left) && is.null(root$right$right)) {
+    return("")
+  } else if (!is.null(root$left) && is.null(root$left$left) && is.null(root$left$right) &&
+             !is.null(root$right) && is.null(root$right$left) && is.null(root$right$right)) {
     return(paste("(", root$left$value, " ", root$value, " ", root$right$value, ") "))
   } else {
-    left_str <- toString(root$left)
-    right_str <- toString(root$right)
-    return(paste(left_str, root$value, " ", right_str))
+    left_str <- getStringRule(root$left)
+    right_str <- getStringRule(root$right)
+    return(paste(left_str, root$value, right_str))
   }
 }
-
-# To use:
-# tree <- create_random_binary_tree(3)  # Replace 3 with the desired depth
-# output_string <- paste("If ", getStringRule(tree), " Then...")
-
 
 #Crossover functions:
 
