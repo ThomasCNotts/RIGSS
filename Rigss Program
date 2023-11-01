@@ -40,7 +40,7 @@ tempRules <- list() #this will hold the new generation of rules
 for (i in 1:length(rules)){ #this is to create the next generation of pop size rules - it will end up bigger as crossover creates two rules
 
 #choose an operation - reproduction, mutation, crossover
-choice <- sample(c("reproduction", "mutation"), 1)
+choice <- sample(c("reproduction", "mutation", "crossover"), 1)
 
 if (choice == "reproduction"){
 tempRules[[i]] <- sample(rules[[1]], 1)   #      , prob=fitness) #choose a rule with probabilty proportional to fitness
@@ -62,6 +62,17 @@ rv <- sample(equals,1)
 
 m <- list()
 tempRules[[i]] <- mutate(root = chosenRule, toReplace = r, replaceValue = rv)
+
+} else if (choice == "crossover"){
+
+rule1 <- rules[[sample(1:length(rules),1)]]     #    , prob=fitness)
+rule2 <- rules[[sample(1:length(rules),1)]]     #    , prob=fitness)
+
+r1String <- getStringRule(rule1)
+r2String <- getStringRule(rule2)
+op1 <- sample(operators[operators %in% unlist(strsplit(r1String, ""))],1)
+op2 <- sample(operators[operators %in% unlist(strsplit(r2String, ""))],1)
+
 
 }
 }

@@ -100,7 +100,7 @@ mutate <- function(root, toReplace, replaceValue) {
 #m[[1] <- mutate(x[[1]], r, rv)
 
 
-#To prepare the rule for running:
+#To prepare a rule for running:
 getStringRule <- function(root) {
   if (is.null(root)) {
     return("")
@@ -114,8 +114,9 @@ getStringRule <- function(root) {
   }
 }
 
-#Crossover functions:
 
+#Crossover functions:
+#########################
 
 replace_subtree <- function(parent, direction, new_subtree) {
   if (length(direction) == 0) {
