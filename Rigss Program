@@ -1,6 +1,9 @@
 #################################################
 
-target <- ???
+source("/Users/liztc/Documents/IGSS/IGSS Code/RIGSS functions")
+source("/Users/liztc/Documents/IGSS/IGSS Code/Agent Model")
+
+target <- rep(100,100)
 
 #EVOLVE RULES
 
@@ -15,11 +18,10 @@ thenTake[i] <- sample(0:10,1) #the value after then for each rule
 }
 
 #start generation loop to create each population generation - what is the stopping condition?
+for (generation in 1:10){
 
 #start rules loop to test each rule
-
 fitness <- c()
-
 for (i in 1:length(rules)){
 
 agentCommand <- getStringRule(rules[[i]])
@@ -29,15 +31,22 @@ agentCommand <- paste("if (", agentCommand, ") {agents[[i]]@take <- ", thenTake[
 #eval(parse(text = rule))
 
 #run ABM here for one rule here
-goldDist <- hawkDove(agentCommand)
+try(goldDist <- hawkDove(agentCommand), silent=TRUE)
 
 #test for fitness
-
+if (exists("goldDist")){
 mat <- rbind(target, goldDist)
-fitness[i] <- dist(mat, method="euclidean")
+fitness[i] <- dist(mat, method="euclidean")}
 #end us with a vector of fitnesses called fitness
 #use dist()
 
+}
+
+#replace NAs in fitness with 0 so they have zero probability
+fitness[is.na(fitness)] <- 0
+
+for (t in 1:length(fitness)){
+if (fitness[t] > 0) {fitness[t] <- 1 / fitness[t]}
 }
 
 #################################################
@@ -46,7 +55,7 @@ fitness[i] <- dist(mat, method="euclidean")
 
 tempRules <- list() #this will hold the new generation of rules
 tempTake <- c()
-counter <- 0
+counter <- 1
 
 for (i in 1:length(rules)){ #this is to create the next generation of pop size rules - it will end up bigger as crossover creates two rules
 
@@ -63,7 +72,7 @@ tempRules[[counter]] <- rules[[sampledRule]]
 tempTake[counter] <- thenTake[sampledRule]
 
 } else if (choice == "mutation"){
-sampledRule <- sample(1:length(rules),1) #    , prob=fitness)
+sampledRule <- sample(1:length(rules),1, prob=fitness) #    , prob=fitness)
 chosenRule <- rules[[sampledRule]]     
 #this is point mutation but many others exist
 #to use:
@@ -85,8 +94,8 @@ tempTake[counter] <- thenTake[sampledRule]
 
 } else if (choice == "crossover"){
 
-sampledRule1 <- sample(1:length(rules),1) #prob=fitness
-sampledRule2 <- sample(1:length(rules),1) #prob=fitness
+sampledRule1 <- sample(1:length(rules),1, prob=fitness) #prob=fitness
+sampledRule2 <- sample(1:length(rules),1, prob=fitness) #prob=fitness
 
 rule1 <- rules[[sampledRule1]]
 rule2 <- rules[[sampledRule2]]
@@ -108,13 +117,13 @@ co1 <- get_subtree(rule1,subtree1Path)
 co2 <- get_subtree(rule2,subtree2Path)
 
 newRule1 <- replace_subtree(rule1, subtree1Path, co2)
-tempRules[[counter] <- newRule1
+tempRules[[counter]] <- newRule1
 tempTake[counter] <- thenTake[sampledRule1]
 
 counter <- counter + 1
 
 newRule2 <- replace_subtree(rule2, subtree2Path, co1)
-tempRules[[counter] <- newRule2
+tempRules[[counter]] <- newRule2
 tempTake[counter] <- thenTake[sampledRule2]
 }#end of if any...
 
@@ -127,7 +136,7 @@ counter <- counter + 1
 rules <- tempRules
 thenTake <- tempTake
 
-
+}
 
 
 

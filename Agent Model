@@ -12,7 +12,7 @@ hawkDove <- function(evolvedRule){
 m <- 10
 land <- matrix(0, ncol=m, nrow=m)
 
-for (i in 1:10){
+for (i in 1:50){
 x <- sample(1:m,1)
 y <- sample(1:m,1)
 gold <- sample(1:3,1)
@@ -33,6 +33,7 @@ representation(
 
 #setup agents
 numAgents <- 100
+F <- numAgents
 agents <- c()
 for (i in 1: numAgents){
 agents[[i]] <- new("agent", 
