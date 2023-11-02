@@ -5,13 +5,7 @@ locFun <- function(obj, location) {
   return(obj@location == location)
 }
 
-#function to work out how much gold has been taken by all agents on a patch (bit useless)
-goldFun <- function(obs){
-totalGoldTaken <- 0
-for (i in obs){
-totalGoldTaken <- totalGoldTaken + agents[[i]]@take}
-return(totalGoldTaken)
-}
+hawkDove <- function(evolvedRule){
 
 #SETUP
 #size of land in metres
@@ -79,7 +73,8 @@ G <- agents[[i]]@gold
 #Evolved rule here
 #take <- ...
 #To Test Use
-agents[[i]]@take <- 2
+#agents[[i]]@take <- 2
+eval(parse(text = evolvedRule))
 }
 
 #they fight it out and see how much everyone gets
@@ -89,7 +84,10 @@ for (i in 1:length(land)){
 agentsHere <- which(sapply(agents, locFun, location = i))
 if (length(agentsHere) > 0){
 goldAvailable <- land[i]
-goldTaken <- goldFun(agentsHere)
+goldTaken <- 0
+for (j in agentsHere){
+goldTaken <- goldTaken + agents[[j]]@take
+}
 
 # ask agents to increase their 
 # goldTookLast = 0,
@@ -110,6 +108,10 @@ agents[[j]]@goldTookLast <- 0
 }#end of ticks
 
 #to return gold distribution we'll need:
+g <- c()
 for (i in 1:numAgents){
-print(agents[[i]]@gold)
+g[i] <- agents[[i]]@gold
+}
+
+return(g)
 }

@@ -1,4 +1,7 @@
 #################################################
+
+target <- ???
+
 #EVOLVE RULES
 
 #create first population of rules
@@ -15,17 +18,23 @@ thenTake[i] <- sample(0:10,1) #the value after then for each rule
 
 #start rules loop to test each rule
 
+fitness <- c()
+
 for (i in 1:length(rules)){
 
-#agentCommand <- getStringRule(rules[[i]])
-#agentCommand <- cat("if (", agentCommand, ") {", thenTake[i], "}")
+agentCommand <- getStringRule(rules[[i]])
+agentCommand <- paste("if (", agentCommand, ") {agents[[i]]@take <- ", thenTake[i], "}")
 
+#remember, to run:
 #eval(parse(text = rule))
 
 #run ABM here for one rule here
+goldDist <- hawkDove(agentCommand)
 
 #test for fitness
 
+mat <- rbind(target, goldDist)
+fitness[i] <- dist(mat, method="euclidean")
 #end us with a vector of fitnesses called fitness
 #use dist()
 
@@ -36,6 +45,7 @@ for (i in 1:length(rules)){
 #genetic operations here to build up a new population
 
 tempRules <- list() #this will hold the new generation of rules
+tempTake <- c()
 counter <- 0
 
 for (i in 1:length(rules)){ #this is to create the next generation of pop size rules - it will end up bigger as crossover creates two rules
@@ -44,9 +54,17 @@ for (i in 1:length(rules)){ #this is to create the next generation of pop size r
 choice <- sample(c("reproduction", "mutation", "crossover"), 1)
 
 if (choice == "reproduction"){
-tempRules[[counter]] <- sample(rules[[1]], 1)   #      , prob=fitness) #choose a rule with probabilty proportional to fitness
+
+sampledRule <- sample(1:length(rules),1, prob=fitness)
+##DELETED: sample(rules[[1]], 1)   #      , prob=fitness) #choose a rule with probabilty proportional to fitness
+#We need the index of the rule, rather than just straight to the rule itself
+#because we need to know the thenTake value
+tempRules[[counter]] <- rules[[sampledRule]]
+tempTake[counter] <- thenTake[sampledRule]
+
 } else if (choice == "mutation"){
-chosenRule <- rules[[sample(1:length(rules),1)]]     #    , prob=fitness)
+sampledRule <- sample(1:length(rules),1) #    , prob=fitness)
+chosenRule <- rules[[sampledRule]]     
 #this is point mutation but many others exist
 #to use:
 #unlist rule
@@ -63,11 +81,15 @@ rv <- sample(equals,1)
 
 m <- list()
 tempRules[[counter]] <- mutate(root = chosenRule, toReplace = r, replaceValue = rv)
+tempTake[counter] <- thenTake[sampledRule]
 
 } else if (choice == "crossover"){
 
-rule1 <- rules[[sample(1:length(rules),1)]]     #    , prob=fitness)
-rule2 <- rules[[sample(1:length(rules),1)]]     #    , prob=fitness)
+sampledRule1 <- sample(1:length(rules),1) #prob=fitness
+sampledRule2 <- sample(1:length(rules),1) #prob=fitness
+
+rule1 <- rules[[sampledRule1]]
+rule2 <- rules[[sampledRule2]]
 
 r1String <- getStringRule(rule1)
 r2String <- getStringRule(rule2)
@@ -87,10 +109,13 @@ co2 <- get_subtree(rule2,subtree2Path)
 
 newRule1 <- replace_subtree(rule1, subtree1Path, co2)
 tempRules[[counter] <- newRule1
+tempTake[counter] <- thenTake[sampledRule1]
+
 counter <- counter + 1
 
 newRule2 <- replace_subtree(rule2, subtree2Path, co1)
 tempRules[[counter] <- newRule2
+tempTake[counter] <- thenTake[sampledRule2]
 }#end of if any...
 
 }#end of crossover
@@ -100,6 +125,7 @@ counter <- counter + 1
 }
 
 rules <- tempRules
+thenTake <- tempTake
 
 
 
