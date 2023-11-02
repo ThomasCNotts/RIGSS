@@ -36,6 +36,7 @@ for (i in 1:length(rules)){
 #genetic operations here to build up a new population
 
 tempRules <- list() #this will hold the new generation of rules
+counter <- 0
 
 for (i in 1:length(rules)){ #this is to create the next generation of pop size rules - it will end up bigger as crossover creates two rules
 
@@ -43,7 +44,7 @@ for (i in 1:length(rules)){ #this is to create the next generation of pop size r
 choice <- sample(c("reproduction", "mutation", "crossover"), 1)
 
 if (choice == "reproduction"){
-tempRules[[i]] <- sample(rules[[1]], 1)   #      , prob=fitness) #choose a rule with probabilty proportional to fitness
+tempRules[[counter]] <- sample(rules[[1]], 1)   #      , prob=fitness) #choose a rule with probabilty proportional to fitness
 } else if (choice == "mutation"){
 chosenRule <- rules[[sample(1:length(rules),1)]]     #    , prob=fitness)
 #this is point mutation but many others exist
@@ -61,7 +62,7 @@ rv <- sample(equals,1)
 }
 
 m <- list()
-tempRules[[i]] <- mutate(root = chosenRule, toReplace = r, replaceValue = rv)
+tempRules[[counter]] <- mutate(root = chosenRule, toReplace = r, replaceValue = rv)
 
 } else if (choice == "crossover"){
 
@@ -70,11 +71,32 @@ rule2 <- rules[[sample(1:length(rules),1)]]     #    , prob=fitness)
 
 r1String <- getStringRule(rule1)
 r2String <- getStringRule(rule2)
+
+if (any(operators %in% unlist(strsplit(r1String, ""))) & any(operators %in% unlist(strsplit(r2String, "")))) {
 op1 <- sample(operators[operators %in% unlist(strsplit(r1String, ""))],1)
 op2 <- sample(operators[operators %in% unlist(strsplit(r2String, ""))],1)
 
+subtrees1 <- find_paths_to_nodes(rule1, op1)
+subtrees2 <- find_paths_to_nodes(rule2, op2)
 
-}
+subtree1Path <- subtrees1[[sample(1:length(subtrees1),1)]]
+subtree2Path <- subtrees2[[sample(1:length(subtrees2),1)]]
+
+co1 <- get_subtree(rule1,subtree1Path)
+co2 <- get_subtree(rule2,subtree2Path)
+
+newRule1 <- replace_subtree(rule1, subtree1Path, co2)
+tempRules[[counter] <- newRule1
+counter <- counter + 1
+
+newRule2 <- replace_subtree(rule2, subtree2Path, co1)
+tempRules[[counter] <- newRule2
+}#end of if any...
+
+}#end of crossover
+
+counter <- counter + 1
+
 }
 
 rules <- tempRules

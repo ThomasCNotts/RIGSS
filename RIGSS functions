@@ -153,3 +153,18 @@ find_paths_to_nodes_recursive <- function(tree, target, current_path, result) {
   return(result)
 }
 
+get_subtree <- function(tree, path) {
+  if (length(path) == 0) {
+    return(tree)
+  } else {
+    direction <- path[1]
+    rest_path <- path[-1]
+    if (direction == "left") {
+      return(get_subtree(tree$left, rest_path))
+    } else if (direction == "right") {
+      return(get_subtree(tree$right, rest_path))
+    } else {
+      return(NULL)
+    }
+  }
+}
