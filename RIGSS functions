@@ -168,3 +168,39 @@ get_subtree <- function(tree, path) {
     }
   }
 }
+
+
+# Function to check if a tree has only one node
+oneNode <- function(root) {
+  if (is.null(root)) {
+    return(FALSE)
+  } else if (is.null(root$left) && is.null(root$right)) {
+    return(TRUE)
+  } else {
+    return(FALSE)
+  }
+}
+
+# Example usage:
+#tree1 <- node("A")
+#tree2 <- node("+", node("B"), node("C"))
+#is_one_node1 <- isOneNodeTree(tree1)  # This will be TRUE
+#is_one_node2 <- isOneNodeTree(tree2)  # This will be FALSE
+
+
+# Function to check if a tree has only one node
+nullRule <- function(root) {
+  if (is.null(root)) {
+    return(TRUE)  # Consider NULL as a one-node tree
+  } else if (is.null(root$left) && is.null(root$right)) {
+    return(TRUE)  # Tree with no children is a one-node tree
+  } else {
+    return(FALSE)
+  }
+}
+
+# Example usage:
+#tree1 <- NULL  # No tree
+#tree2 <- node("A")  # One-node tree
+#is_one_node1 <- isOneNodeTree(tree1)  # This will be TRUE
+#is_one_node2 <- isOneNodeTree(tree2)  # This will be TRUE

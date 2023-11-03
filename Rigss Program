@@ -57,6 +57,16 @@ tempRules <- list() #this will hold the new generation of rules
 tempTake <- c()
 counter <- 1
 
+toRemove <- c()
+for (k in 1:length(rules)){
+if (oneNode(rules[[k]])) {toRemove <- c(toRemove, k)}
+if (nullRule(rules[[k]])) {toRemove <- c(toRemove, k)}
+}
+if (length(toRemove > 0)) {
+rules <- rules[-toRemove]
+fitness <- fitness[-toRemove]
+} ######ALSO REMOVE FITNESS
+
 for (i in 1:length(rules)){ #this is to create the next generation of pop size rules - it will end up bigger as crossover creates two rules
 
 #choose an operation - reproduction, mutation, crossover
@@ -77,7 +87,17 @@ chosenRule <- rules[[sampledRule]]
 #this is point mutation but many others exist
 #to use:
 #unlist rule
-y <- unlist(chosenRule[[1]])
+
+
+#y <- unlist(chosenRule[[1]])
+
+
+#SHOULD BE unlist(chosenRule)???
+y <- unlist(chosenRule)
+
+
+
+
 #choose something to mutate, r for replace (rv is replacement value)
 r <- sample(y,1)[[1]]
 
