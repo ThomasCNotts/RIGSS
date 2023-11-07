@@ -8,7 +8,7 @@ target <- rep(100,100)
 #EVOLVE RULES
 
 #create first population of rules
-pop <- 10
+pop <- 100
 
 rules <- createRules(pop)
 
@@ -18,7 +18,7 @@ thenTake[i] <- sample(0:10,1) #the value after then for each rule
 }
 
 #start generation loop to create each population generation - what is the stopping condition?
-for (generation in 1:10){
+for (generation in 1:4){
 
 #start rules loop to test each rule
 fitness <- c()
@@ -55,7 +55,7 @@ if (fitness[t] > 0) {fitness[t] <- 1 / fitness[t]}
 
 tempRules <- list() #this will hold the new generation of rules
 tempTake <- c()
-counter <- 1
+counter <- 0
 
 toRemove <- c()
 for (k in 1:length(rules)){
@@ -64,10 +64,13 @@ if (nullRule(rules[[k]])) {toRemove <- c(toRemove, k)}
 }
 if (length(toRemove > 0)) {
 rules <- rules[-toRemove]
+thenTake <- thenTake[-toRemove]
 fitness <- fitness[-toRemove]
 } ######ALSO REMOVE FITNESS
 
-for (i in 1:length(rules)){ #this is to create the next generation of pop size rules - it will end up bigger as crossover creates two rules
+for (i in 1:pop){ #this is to create the next generation of pop size rules - it will end up bigger as crossover creates two rules
+
+counter <- counter + 1
 
 #choose an operation - reproduction, mutation, crossover
 choice <- sample(c("reproduction", "mutation", "crossover"), 1)
@@ -88,15 +91,7 @@ chosenRule <- rules[[sampledRule]]
 #to use:
 #unlist rule
 
-
-#y <- unlist(chosenRule[[1]])
-
-
-#SHOULD BE unlist(chosenRule)???
 y <- unlist(chosenRule)
-
-
-
 
 #choose something to mutate, r for replace (rv is replacement value)
 r <- sample(y,1)[[1]]
@@ -145,11 +140,10 @@ counter <- counter + 1
 newRule2 <- replace_subtree(rule2, subtree2Path, co1)
 tempRules[[counter]] <- newRule2
 tempTake[counter] <- thenTake[sampledRule2]
+
 }#end of if any...
 
 }#end of crossover
-
-counter <- counter + 1
 
 }
 
