@@ -1,24 +1,31 @@
 #################################################
 
+#load up the fuctions:
 source("/Users/liztc/Documents/IGSS/IGSS Code/RIGSS functions")
 source("/Users/liztc/Documents/IGSS/IGSS Code/Agent Model")
 
+#describe the target reference dataset
 target <- rep(100,100)
+
+#to store the best rules:
+bestRules <- list()
+bestFit <- c(999,999,999,999,999) #we are storing 5 top rules here
 
 #EVOLVE RULES
 
 #create first population of rules
-pop <- 100
+pop <- 500
 
 rules <- createRules(pop)
 
+#the rules need an conclusion (value after 'then'):
 thenTake <- c()
 for (i in 1:pop){
 thenTake[i] <- sample(0:10,1) #the value after then for each rule
 }
 
 #start generation loop to create each population generation - what is the stopping condition?
-for (generation in 1:4){
+for (generation in 1:100){
 
 #start rules loop to test each rule
 fitness <- c()
@@ -42,6 +49,16 @@ fitness[i] <- dist(mat, method="euclidean")}
 
 }
 
+#################################################
+#Store the best rule if it gets into the Top 5 rules
+if (any(which(bestFit > max(fitness)) > 0)){
+ruleInd <-sample(which(fitness == max(fitness)),1)
+bestInd <- sample(which(bestFit < max(fitness)),1)
+bestFit[bestInd] <- fitness[ruleInd]
+bestRules[bestInd] <- rules[ruleInd]
+}
+#################################################
+
 #replace NAs in fitness with 0 so they have zero probability
 fitness[is.na(fitness)] <- 0
 
@@ -50,13 +67,23 @@ if (fitness[t] > 0) {fitness[t] <- 1 / fitness[t]}
 }
 
 #################################################
+#Store the best rule if it gets into the Top 5 rules
+if (any(which(bestFit > min(fitness)) > 0)){
+ruleInd <-sample(which(fitness == min(fitness),1))
+bestInd <- sample(which(bestFit > min(fitness),1))
+bestFit[bestInd] <- fitness[ruleInd]
+bestRules[bestInd] <- rules[ruleInd]
+}
 
+#################################################
 #genetic operations here to build up a new population
 
 tempRules <- list() #this will hold the new generation of rules
 tempTake <- c()
 counter <- 0
 
+#remove rules that have just one node, and rules that are null
+#also remove the 'then...' value and the fitness
 toRemove <- c()
 for (k in 1:length(rules)){
 if (oneNode(rules[[k]])) {toRemove <- c(toRemove, k)}
@@ -66,7 +93,7 @@ if (length(toRemove > 0)) {
 rules <- rules[-toRemove]
 thenTake <- thenTake[-toRemove]
 fitness <- fitness[-toRemove]
-} ######ALSO REMOVE FITNESS
+}
 
 for (i in 1:pop){ #this is to create the next generation of pop size rules - it will end up bigger as crossover creates two rules
 
@@ -78,8 +105,7 @@ choice <- sample(c("reproduction", "mutation", "crossover"), 1)
 if (choice == "reproduction"){
 
 sampledRule <- sample(1:length(rules),1, prob=fitness)
-##DELETED: sample(rules[[1]], 1)   #      , prob=fitness) #choose a rule with probabilty proportional to fitness
-#We need the index of the rule, rather than just straight to the rule itself
+#we need the index of the rule, rather than just straight to the rule itself
 #because we need to know the thenTake value
 tempRules[[counter]] <- rules[[sampledRule]]
 tempTake[counter] <- thenTake[sampledRule]
