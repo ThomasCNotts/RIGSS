@@ -14,7 +14,7 @@ bestFit <- c(999,999,999,999,999) #we are storing 5 top rules here
 #EVOLVE RULES
 
 #create first population of rules
-pop <- 500
+pop <- 6
 
 rules <- createRules(pop)
 
@@ -25,7 +25,7 @@ thenTake[i] <- sample(0:10,1) #the value after then for each rule
 }
 
 #start generation loop to create each population generation - what is the stopping condition?
-for (generation in 1:100){
+for (generation in 1:6){
 
 #start rules loop to test each rule
 fitness <- c()
@@ -51,8 +51,8 @@ fitness[i] <- dist(mat, method="euclidean")}
 
 #################################################
 #Store the best rule if it gets into the Top 5 rules
-if (any(which(bestFit > min(fitness)))){
-ruleInd <- sample(which(fitness == min(fitness)),1)
+if (any(which(bestFit > min(fitness, na.rm=TRUE)))){
+ruleInd <- sample(which(fitness == min(fitness, na.rm=TRUE)),1)
 bestInd <- sample(which(bestFit > min(fitness)),1)
 bestFit[bestInd] <- fitness[ruleInd]
 bestRules[bestInd] <- rules[ruleInd]
@@ -64,15 +64,6 @@ fitness[is.na(fitness)] <- 0
 
 for (t in 1:length(fitness)){
 if (fitness[t] > 0) {fitness[t] <- 1 / fitness[t]}
-}
-
-#################################################
-#Store the best rule if it gets into the Top 5 rules
-if (any(which(bestFit > min(fitness)))){
-ruleInd <-sample(which(fitness == min(fitness),1))
-bestInd <- sample(which(bestFit > min(fitness),1))
-bestFit[bestInd] <- fitness[ruleInd]
-bestRules[bestInd] <- rules[ruleInd]
 }
 
 #################################################
