@@ -51,9 +51,9 @@ fitness[i] <- dist(mat, method="euclidean")}
 
 #################################################
 #Store the best rule if it gets into the Top 5 rules
-if (any(which(bestFit > max(fitness)) > 0)){
-ruleInd <-sample(which(fitness == max(fitness)),1)
-bestInd <- sample(which(bestFit < max(fitness)),1)
+if (any(which(bestFit > min(fitness)))){
+ruleInd <- sample(which(fitness == min(fitness)),1)
+bestInd <- sample(which(bestFit > min(fitness)),1)
 bestFit[bestInd] <- fitness[ruleInd]
 bestRules[bestInd] <- rules[ruleInd]
 }
@@ -68,7 +68,7 @@ if (fitness[t] > 0) {fitness[t] <- 1 / fitness[t]}
 
 #################################################
 #Store the best rule if it gets into the Top 5 rules
-if (any(which(bestFit > min(fitness)) > 0)){
+if (any(which(bestFit > min(fitness)))){
 ruleInd <-sample(which(fitness == min(fitness),1))
 bestInd <- sample(which(bestFit > min(fitness),1))
 bestFit[bestInd] <- fitness[ruleInd]
