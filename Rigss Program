@@ -10,11 +10,12 @@ target <- rep(100,100)
 #to store the best rules:
 bestRules <- list()
 bestFit <- c(999,999,999,999,999) #we are storing 5 top rules here
+bestTake <- c()
 
 #EVOLVE RULES
 
 #create first population of rules
-pop <- 6
+pop <- 8
 
 rules <- createRules(pop)
 
@@ -25,7 +26,7 @@ thenTake[i] <- sample(0:10,1) #the value after then for each rule
 }
 
 #start generation loop to create each population generation - what is the stopping condition?
-for (generation in 1:6){
+for (generation in 1:10){
 
 #start rules loop to test each rule
 fitness <- c()
@@ -50,12 +51,27 @@ fitness[i] <- dist(mat, method="euclidean")}
 }
 
 #################################################
+#remove rules that have just one node, and rules that are null
+#also remove the 'then...' value and the fitness
+toRemove <- c()
+for (k in 1:length(rules)){
+if (oneNode(rules[[k]])) {toRemove <- c(toRemove, k)}
+if (nullRule(rules[[k]])) {toRemove <- c(toRemove, k)}
+}
+if (length(toRemove > 0)) {
+rules <- rules[-toRemove]
+thenTake <- thenTake[-toRemove]
+fitness <- fitness[-toRemove]
+}
+
+#################################################
 #Store the best rule if it gets into the Top 5 rules
 if (any(which(bestFit > min(fitness, na.rm=TRUE)))){
 ruleInd <- sample(which(fitness == min(fitness, na.rm=TRUE)),1)
 bestInd <- sample(which(bestFit > min(fitness)),1)
 bestFit[bestInd] <- fitness[ruleInd]
 bestRules[bestInd] <- rules[ruleInd]
+bestTake[bestInd] <- thenTake[ruleInd]
 }
 #################################################
 
@@ -72,19 +88,6 @@ if (fitness[t] > 0) {fitness[t] <- 1 / fitness[t]}
 tempRules <- list() #this will hold the new generation of rules
 tempTake <- c()
 counter <- 0
-
-#remove rules that have just one node, and rules that are null
-#also remove the 'then...' value and the fitness
-toRemove <- c()
-for (k in 1:length(rules)){
-if (oneNode(rules[[k]])) {toRemove <- c(toRemove, k)}
-if (nullRule(rules[[k]])) {toRemove <- c(toRemove, k)}
-}
-if (length(toRemove > 0)) {
-rules <- rules[-toRemove]
-thenTake <- thenTake[-toRemove]
-fitness <- fitness[-toRemove]
-}
 
 for (i in 1:pop){ #this is to create the next generation of pop size rules - it will end up bigger as crossover creates two rules
 
