@@ -5,7 +5,11 @@ source("/Users/liztc/Documents/IGSS/IGSS Code/RIGSS functions")
 source("/Users/liztc/Documents/IGSS/IGSS Code/Agent Model")
 
 #describe the target reference dataset
+#equality
 target <- rep(100,100)
+
+#inequality
+#target <- c(900, rep(377,9), rep(122, 39), rep(18,51))
 
 #to store the best rules:
 bestRules <- list()
@@ -15,7 +19,7 @@ bestTake <- c()
 #EVOLVE RULES
 
 #create first population of rules
-pop <- 8
+pop <- 500
 
 rules <- createRules(pop)
 
@@ -26,7 +30,7 @@ thenTake[i] <- sample(0:10,1) #the value after then for each rule
 }
 
 #start generation loop to create each population generation - what is the stopping condition?
-for (generation in 1:10){
+for (generation in 1:100){
 
 #start rules loop to test each rule
 fitness <- c()
@@ -43,7 +47,7 @@ try(goldDist <- hawkDove(agentCommand), silent=TRUE)
 
 #test for fitness
 if (exists("goldDist")){
-mat <- rbind(target, goldDist)
+mat <- rbind(target, sort(goldDist, decreasing=TRUE))
 fitness[i] <- dist(mat, method="euclidean")}
 #end us with a vector of fitnesses called fitness
 #use dist()
