@@ -93,7 +93,7 @@ tempRules <- list() #this will hold the new generation of rules
 tempTake <- c()
 counter <- 0
 
-for (i in 1:length(rules)){ #this is to create the next generation of rules - it will end up bigger as crossover creates two rules
+for (i in 1:pop){ #this is to create the next generation of rules (it will end up bigger as crossover creates two rules)
 
 counter <- counter + 1
 
