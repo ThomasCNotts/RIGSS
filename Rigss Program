@@ -1,8 +1,8 @@
 #################################################
 
 #load up the fuctions:
-source("/Users/liztc/Documents/IGSS/IGSS Code/RIGSS functions")
-source("/Users/liztc/Documents/IGSS/IGSS Code/Agent Model")
+source("/home/liztc/Desktop/RIGSS/RIGSS functions")
+source("/home/liztc/Desktop/RIGSS/Agent Model")
 
 #describe the target reference dataset
 #equality
@@ -19,7 +19,7 @@ bestTake <- c()
 #EVOLVE RULES
 
 #create first population of rules
-pop <- 500
+pop <- 50
 
 rules <- createRules(pop)
 
@@ -72,7 +72,7 @@ fitness <- fitness[-toRemove]
 #Store the best rule if it gets into the Top 5 rules
 if (any(which(bestFit > min(fitness, na.rm=TRUE)))){
 ruleInd <- sample(which(fitness == min(fitness, na.rm=TRUE)),1)
-bestInd <- sample(which(bestFit > min(fitness)),1)
+bestInd <- sample(which(bestFit > min(fitness, na.rm=TRUE)),1)
 bestFit[bestInd] <- fitness[ruleInd]
 bestRules[bestInd] <- rules[ruleInd]
 bestTake[bestInd] <- thenTake[ruleInd]
@@ -93,7 +93,7 @@ tempRules <- list() #this will hold the new generation of rules
 tempTake <- c()
 counter <- 0
 
-for (i in 1:pop){ #this is to create the next generation of pop size rules - it will end up bigger as crossover creates two rules
+for (i in 1:length(rules)){ #this is to create the next generation of rules - it will end up bigger as crossover creates two rules
 
 counter <- counter + 1
 
