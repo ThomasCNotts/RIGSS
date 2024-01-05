@@ -2,7 +2,7 @@
 IGSS algorithms in R
 
 
-This code implements an Inverse Generative Social Science project in R.
+This code implements an Inverse Generative Social Science project in R (see: https://www.jasss.org/26/2/9.html).
 
 A target reference dataset is supplied as a vector--target--which is a distribution of a resource among agents.
 
