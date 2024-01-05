@@ -14,4 +14,4 @@ IF condition THEN TAKE X resource
 
 that all agents in the agent-based model will follow.
 
-The ABM is implemented as a function. The RIGSS program uses genetic programming to evolve rules. It passes each rule to the Agent Model funtion. The function then returns a resource distribution. This is used to test that rule's fitness.
+The ABM is implemented as a function. The RIGSS program uses genetic programming to evolve rules. It passes each rule to the Agent Model funtion. That function then returns a resource distribution. This is used to test that rule's fitness.
